@@ -20,7 +20,7 @@
     <tbody>
         @foreach ( $data as $item )
         <tr>
-            <td>{{ $item->nama }}</td>
+            <td>{{ $item->nama}}</td>
             <td>{{ $item->tinggibadan }}</td>
             <td>{{ $item->beratbadan}}</td>
             <td>{{ $item->bmi}}</td>

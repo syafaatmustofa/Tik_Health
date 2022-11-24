@@ -38,22 +38,25 @@ class ProfilController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        //untuk menghitung bmi
-        $a = new konsul($request->beratbadan, $request->tinggibadan);
-        $b = new umur($request->tahunLahir);
-        $c = new konsultasi($request->tahunLahir, $request->bmi);
+        $hobi = array($request->hobi1, $request->hobi2 , $request->hobi3);
+        $a = new konsultasi($request->beratbadan, $request->tinggibadan, $request->tahunLahir);
         
-        // $a->bmi();
-        // $a->obes();
-        $data = [
-            'bmi' => $a->bmi(),
+        $data = profil::create([
+            'nama' =>$request->nama,
+            'tinggibadan' =>$request->tinggibadan,
+            'beratbadan' =>$request->beratbadan,
+            'bmi' => round($a->bmi(), 2),
             'status' => $a->status(),
-            'umur' => $b->hitungUmur(),
-            'konsul' => $c->konsul()
-        ];
+            'umur' => $a->hitungumur(),
+            'konsul'=>$a->konsult(),
+            'hobi'=>$hobi[0]
+            // 'umur' => $b->hitungUmur(),
+            // 'konsul' => $c->konsul()
+        ]);
+        return redirect('profil');
+        // dd($data);
 
-        return view('profil.tambahprofil', compact('data'));
+        // return view('profil.profil', compact('data'));
     }
 
     /**
@@ -104,12 +107,20 @@ class ProfilController extends Controller
 
 class umur
 {
-    public function __construct($tahun)
+    public function __construct($beratbadan, $tinggibadan, $tahunLahir)
     {
-        $this->tahunLahir = $tahun;
+        $this->beratbadan = $beratbadan;
+        $this->tinggibadan = $tinggibadan / 100;
+        $this->tahunLahir = $tahunLahir;
     }
 
-    public function hitungUmur()
+    public function bmi()
+    {
+        return $this->beratbadan / ($this->tinggibadan * $this->tinggibadan);
+        // return 2022 - $this->tahunLahir;
+    }
+
+    public function hitungumur()
     {
         return 2022 - $this->tahunLahir;
     }
@@ -117,55 +128,33 @@ class umur
 
 class konsultasi extends umur
 {
-    public function __construct($tahun, $bmi)
-    {
-        $this->bmi = $bmi;
-    }
-
-    public function hitung()
-    {
-        if ($this->hitungUmur() > 17) {
-            return 'Dewasa';
-        } else {
-            return 'Belum Dewasa';
-        }
-    }
-
-    public function konsul(){
-        if($this->hitung() == 'Dewasa' && $this->bmi == 'Obesitas'){
-            return 'Anda Bisa Mendapatkan Konsultasi Gratis';
-        }else{
-            return 'Anda Tidak Mendapatkan Konsultasi Gratis';
-        }
-    }
-}
-
-class hitungbmi
-{
-    public function __construct($beratbadan, $tinggibadan)
-    {
-        $this->berat = $beratbadan;
-        $this->tinggi = $tinggibadan / 100;
-    }
-
-    public function bmi()
-    {
-        return $this->beratbadan / ($this->tinggibadan * $this->tinggibadan);
-    }
-}
-
-class konsul extends hitungbmi
-{
     public function status()
     {
+        // $this->bmi = $bmi;
         $dbmi = $this->bmi();
 
-        if ($dbmi < 18) {
+        if ($dbmi < 18.5) {
             return 'kurus';
+        } elseif ($dbmi <= 22.9) {
+            return 'Normal';
+        } elseif ($dbmi <= 29.9) {
+            return 'Gemuk';
         } elseif ($dbmi > 30) {
-            return 'obesitas';
+            return 'Obesitas';
         } else {
-            return 'tidak terdaftar';
+            return 'tidak ditemukan';
+        }
+    }
+
+    public function konsult()
+    {
+        $umur = $this->hitungumur();
+        $status = $this->status();
+
+        if ($umur >= '17' && $status == 'Obesitas') {
+            return 'Anda Bisa Mendapatkan Konsultasi Gratis';
+        } else {
+            return 'Anda Tidak Mendapatkan Konsultasi Gratis';
         }
     }
 }

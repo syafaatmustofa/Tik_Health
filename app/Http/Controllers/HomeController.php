@@ -25,7 +25,7 @@ class HomeController extends Controller
     public function index()
     {
         if (Auth::user()->role == 'admin') {
-            return redirect('kategori');
+            return redirect('profil/create');
         }elseif (Auth::user()->role == 'editor') {
             return redirect('artikel');
         }else {

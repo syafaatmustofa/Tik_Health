@@ -25,12 +25,14 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Hobi</label>
-                    <input type="text" class="form-control" name="hobi">
+                    <input type="text" class="form-control" name="hobi1">
+                    <input type="text" class="form-control" name="hobi2">
+                    <input type="text" class="form-control" name="hobi3">
                 </div>
                 <button type="submit" class="btn btn-primary">Klik</button>
             </form>
 
-            <table class="table mt-3">
+            {{-- <table class="table mt-3">
                 <thead>
                     <tr>
                         <th scope="col">bmi</th>
@@ -49,7 +51,7 @@
                         @endisset
                     </tr>
                 </tbody>
-            </table>
+            </table> --}}
         </div>
     </div>
 </div>
